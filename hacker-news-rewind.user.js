@@ -16,11 +16,11 @@
 (function() {
     'use strict';
 
-    function goBackOneDay() {
-        let urlParams = new URLSearchParams(window.location.search);
-        let dateStart = urlParams.get('dateStart');
-        let dateEnd = urlParams.get('dateEnd');
+    let urlParams = new URLSearchParams(window.location.search);
+    let dateStart = urlParams.get('dateStart');
+    let dateEnd = urlParams.get('dateEnd');
 
+    function rewind() {
         let delay = 86400; // One day
         urlParams.set("dateStart", dateStart - delay);
         urlParams.set("dateEnd", dateEnd - delay);
@@ -28,14 +28,15 @@
     }
 
     var observer = new MutationObserver((r, o) => {
-        // wait until the search filter appears
+        // wait until the search bar container appears in DOM
         let parents = $(".SearchFilters_filters")
         if (parents.length === 1) {
-            let parent = parents[0]
-            let span = $("<span class='SearchFilters_filterContainer'><button>&lt;-</button></span>").click(goBackOneDay)
-            parent.appendChild(span[0])
-            console.log("Gotcha!")
-            o.disconnect()
+            if (!(dateStart === null && dateEnd == null)) {
+                let parent = parents[0]
+                let span = $("<span class='SearchFilters_filterContainer'><button>&lt;-</button></span>").click(rewind);
+                parent.appendChild(span[0]);
+                o.disconnect();
+            }
         }
     })
     observer.observe(document.body, { subtree: true, childList: true })
